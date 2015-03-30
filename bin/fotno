@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const os = require('os');
+
+const App = require('../');
+
+const CONFIG_FILE_NAME = '.fotnorc';
+
+// Instantiate with a configuration file from either (an ancestor of) the process cwd or your home dir
+const app = new App([
+		os.homedir()
+	],
+	CONFIG_FILE_NAME);
+
+// Parse ARGV and run
+app.run(process.argv.slice(2))
+	.catch(e => console.log(e.stack)); // eslint-disable-line no-console
