@@ -14,12 +14,20 @@ const FotnoCommand = require('./FotnoCommand');
 const ModuleRegistrationApi = require('./ModuleRegistrationApi');
 
 class App {
+	/**
+	 * @constructor
+	 * @param {Array} configLocations
+	 * @param {string} configFileName
+	 * @param {Object} opts
+	 * @param {boolean} [opts.silent] - Excludes the use of opts.stdout
+	 * @param {WritableStream} [opts.stdout]
+	 */
 	constructor (configLocations, configFileName, opts) {
 		this.name = opts && opts.appName ? opts.appName : path.basename(process.argv[1]);
 		this.config = new ConfigManager(configLocations, configFileName);
-		this.configFileName = configFileName;
 		this.packageJson = require('../../package.json');
 		this.processPath = process.cwd();
+		this.version = opts && opts.appVersion ? opts.appVersion : null;
 
 		const colorConfig = this.config.registerConfig('colors', os.platform() === 'win32' ? {
 				log: ['reset'],
@@ -48,8 +56,9 @@ class App {
 			stdout: stdout
 		});
 
-		this.cli = new AskNicely(this.packageJson.name);
+		this.cli = new AskNicely(this.name);
 		this.cli.setNewChildClass(FotnoCommand);
+		this.cli.getLongName = FotnoCommand.prototype.getLongName.bind(this.cli);
 
 		this.modules = [];
 		this.builtInModules = [];
@@ -87,6 +96,7 @@ class App {
 	/**
 	 * Built in modules are not saved to the config files. These modules can be added at runtime. This is usefull when
 	 * creating a tools bundle powered by fotno.
+	 *
 	 * @param {string} modulePath The path to the module to enable.
 	 * @param {...*} [extra] Extra parameters which can be used by the module, only used for built-in modules.
 	 * @return {ModuleRegistrationApi}
@@ -101,6 +111,7 @@ class App {
 
 	/**
 	 * Enable a module, which can be saved to the config file.
+	 *
 	 * @param {string} modulePath The path to the module to enable.
 	 * @param {...*} [extra] Extra parameters which can be used by the module, only used for built-in modules.
 	 * @return {ModuleRegistrationApi}
@@ -120,12 +131,29 @@ class App {
 		return mod;
 	}
 
+	/**
+	 * Returns an object with information that a module could use to reason about which fotno instance it is used for.
+	 *
+	 * @return {{name: *, version: ?string}}
+	 */
+	getInfo () {
+		return {
+			name: this.name,
+			version: this.version
+		};
+	}
+
+	/**
+	 * @param {Array<string>} args
+	 * @param {Object} request
+	 * @return {Promise.<TResult>}
+	 */
 	run (args, request) {
 		return this.cli.interpret(Object.assign([], args), request, this.logger)
 			.then(request => request.execute(this.logger))
 
 			.catch(error => {
-				this.error('fotnofail', error, {
+				this.error('failure', error, {
 					cwd: this.processPath,
 					args: [this.name].concat(args.map(arg => arg.indexOf(' ') >= 0 ? `"${arg}"` : arg)).join(' '),
 					mods: this.modules.map(mod => mod.getInfo().name + ` (${mod.getInfo().version})`).join(os.EOL)
@@ -145,6 +173,11 @@ class App {
 			});
 	}
 
+	/**
+	 * @param {string} caption
+	 * @param {Error|InputError} error
+	 * @param {Object} [debugVariables]
+	 */
 	error (caption, error, debugVariables) {
 		if (error instanceof this.cli.InputError) {
 			this.logger.caption('Input error');

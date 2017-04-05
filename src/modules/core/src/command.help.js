@@ -21,11 +21,6 @@ function toOptionRow (option) {
 	];
 }
 
-function getFull (command) {
-	return (command.parent ? getFull(command.parent) : [])
-		.concat([command.name]).concat(command.parameters.map(param => `<${param.name}>`));
-}
-
 module.exports = (fotno, app) => {
 	function helpController (req, res) {
 		const command = req.command;
@@ -34,7 +29,7 @@ module.exports = (fotno, app) => {
 		res.caption((isRoot ? `${fotno.getAppInfo().name} --help` : 'help for the ' + command.name + ' command'));
 
 		const props = [];
-		props.push(['Command', getFull(command).join(' ')]);
+		props.push(['Command', command.getLongName()]);
 		if (command.aliases.length) {
 			props.push(['Aliases', command.aliases.join(', ')]);
 		}

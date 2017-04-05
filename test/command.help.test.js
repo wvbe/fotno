@@ -41,7 +41,7 @@ describe('help command', () => {
 			.then(request => request.execute(app.logger))
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the module command'), 'Not outputting header');
-				assert.ok(testStdout.outputContains('Fotno module management'), 'Not outputting command description');
+				assert.ok(testStdout.outputContains('Tool\'s module management'), 'Not outputting command description');
 				assert.ok(testStdout.outputContains('--add'), 'Not listing --add argument');
 				assert.ok(testStdout.outputContains('--dry'), 'Not listing --ry argument');
 				assert.ok(testStdout.outputContains('--list'), 'Not listing --list argument');

@@ -5,7 +5,7 @@ const path = require('path');
 
 module.exports = (fotno, app) => {
 	function whoController (req, res) {
-		res.caption(`${fotno.getAppInfo().name} who`);
+		res.caption(req.command.getLongName());
 
 		res.properties({
 			Hostname: os.hostname(),

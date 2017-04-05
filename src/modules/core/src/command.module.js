@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = (fotno, app) => {
 	function moduleController (req, res) {
-		res.caption(`${fotno.getAppInfo().name} module`);
+		res.caption(req.command.getLongName());
 
 		if (req.options.list) {
 			if (req.options.verbose) {
@@ -78,7 +78,7 @@ module.exports = (fotno, app) => {
 	}
 
 	fotno.registerCommand('module', moduleController)
-		.setDescription('Fotno module management.')
+		.setDescription('Tool\'s module management.')
 
 		.addOption(new fotno.MultiOption('add')
 			.setDescription('Add a module.')
@@ -93,7 +93,7 @@ module.exports = (fotno, app) => {
 		.addOption('list', 'l', 'List all enabled modules.')
 		.addOption('verbose', 'v', 'Use verbose output when listing modules.')
 
-		.addExample(`${fotno.getAppInfo().name} module --add ./anywhere/my-fotno-module`, 'Add a module to fotno and store it in the configuration file.')
-		.addExample(`${fotno.getAppInfo().name} module --remove ./anywhere/my-fotno-module`, 'Remove a module from fotno and store it in the configuration file.')
-		.addExample(`${fotno.getAppInfo().name} module --list --verbose`, 'Remove a module from fotno and store it in the configuration file.');
+		.addExample(`${fotno.getAppInfo().name} module --add ./anywhere/my-fotno-module`, 'Add a module to the tool and store it in the configuration file.')
+		.addExample(`${fotno.getAppInfo().name} module --remove ./anywhere/my-fotno-module`, 'Remove a module from the tool and store it in the configuration file.')
+		.addExample(`${fotno.getAppInfo().name} module --list --verbose`, 'Remove a module from the tool and store it in the configuration file.');
 };

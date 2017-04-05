@@ -1,16 +1,13 @@
 {
   "name": "fotno",
   "description": "A toolkit for developing a swiss knife",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "author": "wybe minnebo",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://wvbe@bitbucket.org/wvbe/fotno.git"
   },
-  "keywords": [
-    "fontoxml"
-  ],
   "main": "index.js",
   "bin": {
     "fotno": "./bin/fotno"

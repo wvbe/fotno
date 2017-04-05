@@ -22,7 +22,9 @@ function readJsonOrReturnObject (jsonPath) {
 		return {};
 	}
 }
-
+/**
+ * Manages a unified configuration file for all modules that register their config.
+ */
 class ConfigManager {
 	/**
 	 * @constructor
@@ -30,7 +32,7 @@ class ConfigManager {
 	 * @param {string} configFileName    The name of the config file.
 	 */
 	constructor (possibleLocations, configFileName) {
-		this[CONFIG_FILE_NAME] = configFileName || '.fotnorc';
+		this[CONFIG_FILE_NAME] = configFileName;
 		this[LOCATIONS] = possibleLocations.filter(location => !!location);
 		this[SERIALIZERS] = {};
 
@@ -61,6 +63,7 @@ class ConfigManager {
 
 	/**
 	 * Checks the path & exist status for all possible configuration file locations.
+	 *
 	 * @return {Array}
 	 */
 	status () {
@@ -86,7 +89,8 @@ class ConfigManager {
 	}
 
 	/**
-	 * Save a stringified version of the configuration object to a given location,
+	 * Save a stringified version of the configuration object to a given location.
+	 *
 	 * @param {string} location - (preferably absolute) path to the dot-rc file, or its intended directory
 	 * @return {Promise} - Resolves to the succesful location
 	 */
@@ -110,6 +114,7 @@ class ConfigManager {
 
 	/**
 	 * Prepare a stringified version of the configuration object - one that can be deserialized too.
+	 *
 	 * @return {string}
 	 */
 	toString () {

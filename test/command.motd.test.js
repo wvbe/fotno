@@ -30,7 +30,7 @@ describe('motd command', () => {
 			.then(outputHelper.stopCaptureStdout)
 			.then(() => {
 				assert.ok(outputHelper.stdoutContains('/:/_/:/  /  /:/__/ \\:\\__\\'), 'Not outputting logo');
-				assert.ok(outputHelper.stdoutContains('Powered by fotno v'), 'Not outputting powered by fotno message');
+				assert.ok(!outputHelper.stdoutContains('v'), 'Should not output version');
 			})
 			.catch(outputHelper.catchStdout);
 	});
@@ -44,20 +44,17 @@ describe('motd command', () => {
 			.then(() => {
 				assert.ok(!testStdout.outputContains('/:/_/:/  /  /:/__/ \\:\\__\\'), 'Should not output logo');
 				assert.ok(testStdout.outputContains('fotno-no-logo-test'), 'Not outputting caption');
-				assert.ok(testStdout.outputContains('Powered by fotno v'), 'Not outputting powered by fotno message');
 			});
 	});
 
-	it('is able to output the fotno version if the app name is not overridden', () => {
+	it('is able to output the app version', () => {
 		const testStdout = outputHelper.createTestStdout();
-		const appForLogo = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno' });
-		appForLogo.config.logo.logos = [];
+		const appVersion = '1.2.3-rc4';
+		const appForLogo = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test', appVersion: appVersion });
 		return appForLogo.cli.interpret([], null, appForLogo.logger)
 			.then(request => request.execute(appForLogo.logger))
 			.then(() => {
-				assert.ok(!testStdout.outputContains('/:/_/:/  /  /:/__/ \\:\\__\\'), 'Should not output logo');
-				assert.ok(!testStdout.outputContains('Powered by fotno v'), 'Sould not output powered by fotno message');
-				assert.ok(testStdout.outputContains('v' + appForLogo.packageJson.version), 'Not outputting fotno version');
+				assert.ok(testStdout.outputContains('v' + appVersion), 'Outputting app version');
 			});
 	});
 });

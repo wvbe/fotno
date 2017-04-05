@@ -8,7 +8,18 @@ const CONTEXTINFORMERS = Symbol('context informers');
 const LOCATION = Symbol('location');
 const PACKAGEJSON = Symbol('package.json');
 
+/**
+ * The unified API for registering module functionality with the fotno instance. The callback exposed by a module
+ * will get an instance of ModuleRegistrationApi to register itself with.
+ */
 class ModuleRegistrationApi {
+	/**
+	 * Should not be called by a module.
+	 *
+	 * @constructor
+	 * @param {App} app - The
+	 * @param {string} location - The location of the module that is being registered
+	 */
 	constructor (app, location) {
 		this[APP] = app;
 
@@ -24,7 +35,8 @@ class ModuleRegistrationApi {
 	}
 
 	/**
-	 * Do not call manually
+	 * Should not be called by a module. Loads and evaluates the Javascript code belonging to a module.
+	 *
 	 * @param {...*} extra
 	 */
 	load (...extra) {
@@ -38,18 +50,17 @@ class ModuleRegistrationApi {
 	}
 
 	/**
-	 * Returns metadata about the app
-	 * @return {{name, fotnoVersion}}
+	 * Passes on the information returned by App#getInfo
+	 * @see App#getInfo
+	 * @return {object}
 	 */
 	getAppInfo () {
-		return {
-			name: this[APP].name,
-			fotnoVersion: this[APP].packageJson.version
-		};
+		return this[APP].getInfo();
 	}
 
 	/**
-	 * Returns metadata about the module
+	 * Returns metadata about the module that is being registered.
+	 *
 	 * @return {{name, version, description, path}}
 	 */
 	getInfo () {
@@ -62,6 +73,9 @@ class ModuleRegistrationApi {
 	}
 
 	/**
+	 * Adds a command to the root of the fotno instance.
+	 *
+	 * @see FotnoCommand#addCommand
 	 * @param {string} name
 	 * @param {function(AskNicelyRequest, SpeakSoftly)} [controller]
 	 * @return {Command} The command object that was created
@@ -72,6 +86,8 @@ class ModuleRegistrationApi {
 
 	/**
 	 * NOTE: Only use this from the module's index.js, not from within commands, or else your config might be overridden.
+	 *
+	 * @see ConfigManager#registerConfiguration
 	 * @param {string} name
 	 * @param {*} defaultValue
 	 * @param {*|function(config): ?*} [serialize]
@@ -82,6 +98,8 @@ class ModuleRegistrationApi {
 	}
 
 	/**
+	 * Register a subcontroller to render additional info provided by a module in the "who" command provided by fotno.
+	 *
 	 * @param {function(AskNicelyRequest, SpeakSoftly)} informer
 	 * @return {Object} The informer
 	 */
@@ -92,6 +110,8 @@ class ModuleRegistrationApi {
 	}
 
 	/**
+	 * Should not be called by a module. Return the list of context informers registered by this module.
+	 *
 	 * @return {Array}
 	 */
 	getContextInformers () {

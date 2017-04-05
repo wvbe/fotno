@@ -15,6 +15,9 @@ module.exports = (fotno, app, opts) => {
 	const logoConfig = fotno.registerConfiguration(
 		'logo', {
 			logoIndex: 0
+		},
+		() => {
+			return null;
 		});
 
 	app.cli.setController(function logoController (_req, res) {
@@ -54,12 +57,9 @@ module.exports = (fotno, app, opts) => {
 			res.caption(fotno.getAppInfo().name);
 		}
 
-		res.break();
-		if (fotno.getAppInfo().name === 'fotno') {
-			res.debug(leftAlign(`v${fotno.getAppInfo().fotnoVersion}`, maxLineLength));
-		}
-		else {
-			res.debug(leftAlign(`Powered by fotno v${fotno.getAppInfo().fotnoVersion}`, maxLineLength));
+		if (fotno.getAppInfo().version) {
+			res.break();
+			res.debug(leftAlign(`v${fotno.getAppInfo().version}`, maxLineLength));
 		}
 
 		res.break();
