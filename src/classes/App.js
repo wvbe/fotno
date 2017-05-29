@@ -158,7 +158,7 @@ class App {
 					mods: this.modules.map(mod => mod.getInfo().name + ` (${mod.getInfo().version})`).join(os.EOL)
 				});
 
-				// Do not hard exit program, but rather exit with error code one the program is closing itself
+				// Do not hard exit program, but rather exit with error code once the program is closing itself
 				process.on('exit', function () {
 					process.exit(1);
 				});
@@ -177,7 +177,9 @@ class App {
 	 * @param {Object} [debugVariables]
 	 */
 	error (caption, error, debugVariables) {
-		if (error.solution) {
+		this.logger.destroyAllSpinners();
+
+		if (error.hasOwnProperty('solution')) {
 			this.logger.caption('Input error');
 		}
 		else if (caption) {
@@ -188,7 +190,7 @@ class App {
 			this.logger.error(error.message || error.stack || error);
 		}
 
-		if (error.solution) {
+		if (error.hasOwnProperty('solution')) {
 			this.logger.break();
 			this.logger.notice('You might be able to fix this, use the "--help" flag for usage info.');
 			if (error.solution) {
