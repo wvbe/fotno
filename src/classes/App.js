@@ -147,10 +147,18 @@ class App {
 	/**
 	 * @param {Array<string>} args
 	 * @param {Object} request
+	 * @param {boolean} [skipErrorHandling]
 	 * @return {Promise.<TResult>}
 	 */
-	run (args, request) {
-		return this.cli.execute(Object.assign([], args), request, this.logger)
+	run (args, request, skipErrorHandling) {
+		const executedRequest = this.cli.interpret(Object.assign([], args), request, this.logger)
+			.then(request => request.execute(this.logger));
+
+		if (skipErrorHandling) {
+			return executedRequest;
+		}
+
+		return executedRequest
 			.catch(error => {
 				this.error('failure', error, {
 					cwd: this.processPath,

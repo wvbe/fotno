@@ -26,7 +26,7 @@ describe('help command', () => {
 	beforeEach(testStdout.resetOutput);
 
 	it('is able to output usage information', () => {
-		return app.run(['--help'])
+		return app.run(['--help'], undefined, true)
 			.then(() => {
 				assert.ok(testStdout.outputContains('fotno-test --help'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Child commands'), 'Not outputting child commands');
@@ -36,7 +36,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the module command', () => {
-		return app.run(['module', '--help'])
+		return app.run(['module', '--help'], undefined, true)
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the module command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Tool\'s module management'), 'Not outputting command description');
@@ -50,7 +50,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the who command', () => {
-		return app.run(['who', '--help'])
+		return app.run(['who', '--help'], undefined, true)
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the who command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('whoami'), 'Not outputting aliases');
@@ -59,7 +59,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the test command', () => {
-		return app.run(['test-command-1', '--help'])
+		return app.run(['test-command-1', '--help'], undefined, true)
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the test-command-1 command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Test command is used for test cases.'), 'Not outputting long description');
@@ -74,7 +74,7 @@ describe('help command', () => {
 
 	// @NOTE: Actually this does NOT throw, because errors are caught in run() already, echo'd and not rethrown ~wybe
 	xit('throws when trying to output usage information for an non existing command', (done) => {
-		app.run(['non-existing-command', '--help'])
+		app.run(['non-existing-command', '--help'], undefined, true)
 			.then(() => {
 				done(new Error('Should have thrown'));
 			})

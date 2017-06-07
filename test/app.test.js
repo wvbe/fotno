@@ -56,7 +56,7 @@ describe('initial setup', () => {
 	//        lib instead. Also, fotno's App#run() does not throw because it handles errors by logging them, and does
 	//        not rethrow. ~wybe
 	xit('throws an error when a command does not exist', (done) => {
-		app.cli.execute(['non-existing-command'], null, app.logger)
+		app.run(['non-existing-command'], undefined, true)
 			.then(() => {
 				done(new Error('Should have thrown'));
 			})
@@ -66,6 +66,16 @@ describe('initial setup', () => {
 	});
 
 	describe('is able to handle any thrown errors', () => {
+		it('is able to skip handling of throws errors', (done) => {
+			app.run(['non-existing-command', 'test param space'], undefined, true)
+				.then(() => {
+					done(new Error('Should have thrown'));
+				})
+				.catch((_error) => {
+					done();
+				});
+		});
+
 		it('is able to handle any thrown errors', () => {
 			const exitEventListeners = process.listeners('exit');
 			return app.run(['non-existing-command', 'test param space'])
@@ -76,9 +86,12 @@ describe('initial setup', () => {
 					assert.ok(testStdout.outputContains('Input error'), 'Not outputting header');
 					assert.ok(testStdout.outputContains('Could not find a match for input "non-existing-command"'), 'Not outputting error message');
 				})
-				.catch(() => {
+				.catch(error => {
+					// Cheanup if test fails
 					process.removeAllListeners('exit');
 					exitEventListeners.forEach(exitEventListener => process.on('exit', exitEventListener));
+
+					throw error;
 				});
 		});
 

@@ -20,7 +20,7 @@ before(cleanupAppDir);
 describe('module command', () => {
 	// @NOTE: Doesn't look like anything is actually being tested here, missing asserts ~wybe
 	xit('does nothing if no add, remove, or list switches are specified', () => {
-		return app.run(['module']);
+		return app.run(['module'], undefined, true);
 	});
 
 	describe('is able to install more modules', () => {
@@ -51,17 +51,17 @@ describe('module command', () => {
 		});
 
 		it('ignores non existing modules', () => {
-			return app.run(['module', '-a', 'non-existing-module']);
+			return app.run(['module', '-a', 'non-existing-module'], undefined, true);
 		});
 	});
 
 	describe('is able to list installed modules', () => {
 		it('is able to list installed modules', () => {
-			return app.run(['module', '-l']);
+			return app.run(['module', '-l'], undefined, true);
 		});
 
 		it('is able to verbose list installed modules', () => {
-			return app.run(['module', '-l', '-v']);
+			return app.run(['module', '-l', '-v'], undefined, true);
 		});
 	});
 
@@ -73,7 +73,7 @@ describe('module command', () => {
 		});
 
 		it('ignores non existing modules', () => {
-			return app.run(['module', '-r', 'non-existing-module']);
+			return app.run(['module', '-r', 'non-existing-module'], undefined, true);
 		});
 	});
 });

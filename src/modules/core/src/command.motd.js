@@ -50,7 +50,7 @@ module.exports = (fotno, app, opts) => {
 					return '  ' + line;
 				})
 				.forEach(line => {
-					console.log(line); // eslint-disable-line no-console
+					res.config.stdout.write(line + '\n');
 				});
 		}
 		else {
