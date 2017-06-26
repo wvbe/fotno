@@ -5,7 +5,7 @@ const os = require('os');
 const path = require('path');
 
 // 3rd party node modules
-const AskNicely = require('ask-nicely');
+const ask = require('ask-nicely');
 const SpeakSoftly = require('speak-softly');
 
 // classes, helpers
@@ -56,7 +56,7 @@ class App {
 			stdout: stdout
 		});
 
-		this.cli = new AskNicely(this.name);
+		this.cli = new ask.Root(this.name);
 		this.cli.setNewChildClass(FotnoCommand);
 		this.cli.getLongName = FotnoCommand.prototype.getLongName.bind(this.cli);
 

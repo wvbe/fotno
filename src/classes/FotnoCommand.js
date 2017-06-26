@@ -1,12 +1,12 @@
 'use strict';
 
-const AskNicely = require('ask-nicely');
+const ask = require('ask-nicely');
 
 /**
  * A fotno custom version of AskNicely#Command that has extra options for describing examples or a long description.
  * @augments AskNicely.Command
  */
-class FotnoCommand extends AskNicely.Command {
+class FotnoCommand extends ask.Command {
 	/**
 	 * @constructor
 	 * @param {string} name
