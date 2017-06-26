@@ -72,8 +72,21 @@ describe('help command', () => {
 			});
 	});
 
-	// @NOTE: Actually this does NOT throw, because errors are caught in run() already, echo'd and not rethrown ~wybe
-	xit('throws when trying to output usage information for an non existing command', (done) => {
+	it('is able to output usage information for a setAsHelpCommand() command', () => {
+		return app.run(['test-command-2'], undefined, true)
+			.then(() => {
+				assert.ok(testStdout.outputContains('help for the test-command-2 command'), 'Not outputting header');
+			});
+	});
+
+	it('does not output usage information for a setAsHelpCommand(false) command', () => {
+		return app.run(['test-command-3'], undefined, true)
+			.then(() => {
+				assert.ok(!testStdout.outputContains('help for the test-command-3 command'), 'Outputting header');
+			});
+	});
+
+	it('throws when trying to output usage information for an non existing command', (done) => {
 		app.run(['non-existing-command', '--help'], undefined, true)
 			.then(() => {
 				done(new Error('Should have thrown'));

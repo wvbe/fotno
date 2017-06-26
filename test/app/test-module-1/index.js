@@ -8,6 +8,15 @@ module.exports = fotno => {
 		.addOption('to1', 't', 'A option for testing', false)
 		.addOption('to2', null, null, true);
 
+	fotno.registerCommand('test-command-2')
+		.setLongDescription('Test command is used for test cases.')
+		.setAsHelpCommand();
+
+	fotno.registerCommand('test-command-3')
+		.setLongDescription('Test command is used for test cases.')
+		.setAsHelpCommand()
+		.setAsHelpCommand(false);
+
 	fotno.registerContextInformer((_request, response) => {
 		response.caption('Test');
 		response.debug('test context informer');

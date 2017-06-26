@@ -76,7 +76,7 @@ module.exports = (fotno, app) => {
 		.setShort('h')
 		.setDescription('Show usage information, works for any command.'))
 		.addPreController((req, res) => {
-			if (!req.options.help) {
+			if (!req.options.help && !(req.command && req.command.isHelpCommand)) {
 				return;
 			}
 

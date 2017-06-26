@@ -15,6 +15,7 @@ class FotnoCommand extends ask.Command {
 	constructor (name, controller) {
 		super(name, controller);
 
+		this.isHelpCommand = false;
 		this.longDescription = null;
 		this.examples = [];
 
@@ -46,6 +47,12 @@ class FotnoCommand extends ask.Command {
 	 */
 	setLongDescription (description) {
 		this.longDescription = description;
+
+		return this;
+	}
+
+	setAsHelpCommand (enabled) {
+		this.isHelpCommand = enabled !== undefined ? !!enabled : true;
 
 		return this;
 	}
