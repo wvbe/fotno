@@ -1,18 +1,27 @@
 {
   "name": "fotno",
+  "version": "4.1.3",
   "description": "A toolkit for developing a swiss knife",
-  "version": "4.1.2",
-  "author": "wybe minnebo",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://wvbe@bitbucket.org/wvbe/fotno.git"
+  "author": {
+    "name": "Wybe Minnebo",
+    "email": "wybe@x-54.com",
+    "url": "https://github.com/wvbe"
   },
+  "license": "MIT",
+  "homepage": "https://github.com/wvbe/fotno",
+  "keywords": [
+    "argument",
+    "argv",
+    "parsing",
+    "shell",
+    "terminal",
+    "opinionated"
+  ],
   "main": "index.js",
+  "preferGlobal": true,
   "bin": {
     "fotno": "./bin/fotno"
   },
-  "preferGlobal": true,
   "scripts": {
     "lint": "eslint ./src ./test ./bin/fotno; exit 0",
     "start": "node ./bin/fotno",
