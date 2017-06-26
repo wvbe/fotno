@@ -1,7 +1,7 @@
 {
   "name": "fotno",
   "description": "A toolkit for developing a swiss knife",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "author": "wybe minnebo",
   "license": "MIT",
   "repository": {
@@ -19,7 +19,7 @@
     "test": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha"
   },
   "dependencies": {
-    "ask-nicely": "^2.0.0",
+    "ask-nicely": "^3.0.0",
     "fs-extra": "^2.0.0",
     "speak-softly": "^1.2.1"
   },

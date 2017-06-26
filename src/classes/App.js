@@ -56,7 +56,7 @@ class App {
 			stdout: stdout
 		});
 
-		this.cli = new ask.Root(this.name);
+		this.cli = new ask.Command(this.name);
 		this.cli.setNewChildClass(FotnoCommand);
 		this.cli.getLongName = FotnoCommand.prototype.getLongName.bind(this.cli);
 
@@ -148,10 +148,8 @@ class App {
 	 * @param {Object} request
 	 * @return {Promise.<TResult>}
 	 */
-	run (args, request) {
-		return this.cli.interpret(Object.assign([], args), request, this.logger)
-			.then(request => request.execute(this.logger))
-
+	execute (args, request) {
+		return this.cli.execute(Object.assign([], args), request, this.logger)
 			.catch(error => {
 				this.error('failure', error, {
 					cwd: this.processPath,
@@ -179,7 +177,7 @@ class App {
 	 * @param {Object} [debugVariables]
 	 */
 	error (caption, error, debugVariables) {
-		if (error instanceof this.cli.InputError) {
+		if (error.solution) {
 			this.logger.caption('Input error');
 		}
 		else if (caption) {
@@ -190,7 +188,7 @@ class App {
 			this.logger.error(error.message || error.stack || error);
 		}
 
-		if (error instanceof this.cli.InputError) {
+		if (error.solution) {
 			this.logger.break();
 			this.logger.notice('You might be able to fix this, use the "--help" flag for usage info.');
 			if (error.solution) {
