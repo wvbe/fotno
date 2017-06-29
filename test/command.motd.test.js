@@ -25,7 +25,7 @@ describe('motd command', () => {
 	it('is able to output a logo when run without any arguments', () => {
 		outputHelper.startCaptureStdout();
 		const appForLogo = new App([cwd], CONFIG_FILE_NAME);
-		return appForLogo.run([], null, appForLogo.logger)
+		return appForLogo.run([])
 			.then(outputHelper.stopCaptureStdout)
 			.then(() => {
 				assert.ok(outputHelper.stdoutContains('/:/_/:/  /  /:/__/ \\:\\__\\'), 'Not outputting logo');
@@ -38,7 +38,7 @@ describe('motd command', () => {
 		const testStdout = outputHelper.createTestStdout();
 		const appForLogo = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-no-logo-test' });
 		appForLogo.config.logo.logos = [];
-		return appForLogo.run([], null, appForLogo.logger)
+		return appForLogo.run([])
 			.then(() => {
 				assert.ok(!testStdout.outputContains('/:/_/:/  /  /:/__/ \\:\\__\\'), 'Should not output logo');
 				assert.ok(testStdout.outputContains('fotno-no-logo-test'), 'Not outputting caption');
@@ -49,7 +49,7 @@ describe('motd command', () => {
 		const testStdout = outputHelper.createTestStdout();
 		const appVersion = '1.2.3-rc4';
 		const appForLogo = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test', appVersion: appVersion });
-		return appForLogo.run([], null, appForLogo.logger)
+		return appForLogo.run([])
 			.then(() => {
 				assert.ok(testStdout.outputContains('v' + appVersion), 'Outputting app version');
 			});
