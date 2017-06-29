@@ -35,7 +35,7 @@ describe('initial setup', () => {
 		assert.strictEqual(app.name, 'fotno-test');
 	});
 
-	it('is able to skip a mallformed config file', () => {
+	it('is able to skip a malformed config file', () => {
 		assert.ok(new App([path.join(cwd, 'test-module-1')], 'index.js', { silent: true, appName: 'fotno-test' }));
 	});
 
@@ -52,9 +52,11 @@ describe('initial setup', () => {
 		});
 	});
 
-	it('throws an error when a command does not exist', (done) => {
-		app.cli.interpret(['non-existing-command'], null, app.logger)
-			.then(request => request.execute(app.logger))
+	// @NOTE: Commented out because you're testing AskNicely behaviour here - I've added this test to the ask-nicely
+	//        lib instead. Also, fotno's App#run() does not throw because it handles errors by logging them, and does
+	//        not rethrow. ~wybe
+	xit('throws an error when a command does not exist', (done) => {
+		app.cli.execute(['non-existing-command'], null, app.logger)
 			.then(() => {
 				done(new Error('Should have thrown'));
 			})

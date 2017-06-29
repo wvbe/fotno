@@ -5,7 +5,7 @@ const os = require('os');
 const path = require('path');
 
 // 3rd party node modules
-const AskNicely = require('ask-nicely');
+const ask = require('ask-nicely');
 const SpeakSoftly = require('speak-softly');
 
 // classes, helpers
@@ -56,9 +56,10 @@ class App {
 			stdout: stdout
 		});
 
-		this.cli = new AskNicely(this.name);
+		this.cli = new ask.Command(this.name);
 		this.cli.setNewChildClass(FotnoCommand);
 		this.cli.getLongName = FotnoCommand.prototype.getLongName.bind(this.cli);
+		Object.assign(this.cli, ask);
 
 		this.modules = [];
 		this.builtInModules = [];
@@ -149,9 +150,7 @@ class App {
 	 * @return {Promise.<TResult>}
 	 */
 	run (args, request) {
-		return this.cli.interpret(Object.assign([], args), request, this.logger)
-			.then(request => request.execute(this.logger))
-
+		return this.cli.execute(Object.assign([], args), request, this.logger)
 			.catch(error => {
 				this.error('failure', error, {
 					cwd: this.processPath,
@@ -164,7 +163,6 @@ class App {
 					process.exit(1);
 				});
 			})
-
 			.then(() => {
 				if (os.platform() !== 'win32') {
 					this.logger.break();
@@ -179,7 +177,7 @@ class App {
 	 * @param {Object} [debugVariables]
 	 */
 	error (caption, error, debugVariables) {
-		if (error instanceof this.cli.InputError) {
+		if (error.solution) {
 			this.logger.caption('Input error');
 		}
 		else if (caption) {
@@ -190,7 +188,7 @@ class App {
 			this.logger.error(error.message || error.stack || error);
 		}
 
-		if (error instanceof this.cli.InputError) {
+		if (error.solution) {
 			this.logger.break();
 			this.logger.notice('You might be able to fix this, use the "--help" flag for usage info.');
 			if (error.solution) {

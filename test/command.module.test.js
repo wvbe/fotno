@@ -18,9 +18,9 @@ function cleanupAppDir () {
 before(cleanupAppDir);
 
 describe('module command', () => {
-	it('does nothing if no add, remove, or list switches are specified', () => {
-		return app.cli.interpret(['module'], null, app.logger)
-			.then(request => request.execute(app.logger));
+	// @NOTE: Doesn't look like anything is actually being tested here, missing asserts ~wybe
+	xit('does nothing if no add, remove, or list switches are specified', () => {
+		return app.run(['module'], null, app.logger);
 	});
 
 	describe('is able to install more modules', () => {
@@ -51,20 +51,17 @@ describe('module command', () => {
 		});
 
 		it('ignores non existing modules', () => {
-			return app.cli.interpret(['module', '-a', 'non-existing-module'], null, app.logger)
-				.then(request => request.execute(app.logger));
+			return app.run(['module', '-a', 'non-existing-module'], null, app.logger);
 		});
 	});
 
 	describe('is able to list installed modules', () => {
 		it('is able to list installed modules', () => {
-			return app.cli.interpret(['module', '-l'], null, app.logger)
-				.then(request => request.execute(app.logger));
+			return app.run(['module', '-l'], null, app.logger);
 		});
 
 		it('is able to verbose list installed modules', () => {
-			return app.cli.interpret(['module', '-l', '-v'], null, app.logger)
-				.then(request => request.execute(app.logger));
+			return app.run(['module', '-l', '-v'], null, app.logger);
 		});
 	});
 
@@ -76,8 +73,7 @@ describe('module command', () => {
 		});
 
 		it('ignores non existing modules', () => {
-			return app.cli.interpret(['module', '-r', 'non-existing-module'], null, app.logger)
-				.then(request => request.execute(app.logger));
+			return app.run(['module', '-r', 'non-existing-module'], null, app.logger);
 		});
 	});
 });

@@ -1,6 +1,6 @@
 'use strict';
 
-const AskNicely = require('ask-nicely');
+const ask = require('ask-nicely');
 const path = require('path');
 
 const APP = Symbol('app');
@@ -31,7 +31,7 @@ class ModuleRegistrationApi {
 
 		this.hideFromList = false;
 
-		Object.assign(this, AskNicely);
+		Object.assign(this, ask);
 	}
 
 	/**

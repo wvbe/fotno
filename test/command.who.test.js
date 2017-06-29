@@ -26,18 +26,16 @@ describe('who command', () => {
 	beforeEach(testStdout.resetOutput);
 
 	it('is able to output context information', () => {
-		return app.cli.interpret(['who'], null, app.logger)
-			.then(request => request.execute(app.logger))
+		return app.run(['who'], null)
 			.then(() => {
 				assert.ok(testStdout.outputContains('test context informer'), 'Not outputtin test context informer');
 			});
 	});
 
-	it('is shows when no external modules are loaded', () => {
-		return app.cli.interpret(['module', '-r', path.join(cwd, 'test-module-1')], null, app.logger)
-			.then(request => request.execute(app.logger))
-			.then(() => app.cli.interpret(['who'], null, app.logger))
-			.then(request => request.execute(app.logger))
+	it('it shows when no external modules are loaded', () => {
+		return app.run(['module', '-r', path.join(cwd, 'test-module-1')], null)
+			.then(() => testStdout.resetOutput())
+			.then(() => app.run(['who'], null))
 			.then(() => {
 				assert.ok(testStdout.outputContains('No external modules loaded.'), 'No message show');
 			});

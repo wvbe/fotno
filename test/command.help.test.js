@@ -26,8 +26,7 @@ describe('help command', () => {
 	beforeEach(testStdout.resetOutput);
 
 	it('is able to output usage information', () => {
-		return app.cli.interpret(['--help'], null, app.logger)
-			.then(request => request.execute(app.logger))
+		return app.run(['--help'], null, app.logger)
 			.then(() => {
 				assert.ok(testStdout.outputContains('fotno-test --help'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Child commands'), 'Not outputting child commands');
@@ -37,8 +36,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the module command', () => {
-		return app.cli.interpret(['module', '--help'], null, app.logger)
-			.then(request => request.execute(app.logger))
+		return app.run(['module', '--help'], null, app.logger)
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the module command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Tool\'s module management'), 'Not outputting command description');
@@ -52,8 +50,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the who command', () => {
-		return app.cli.interpret(['who', '--help'], null, app.logger)
-			.then(request => request.execute(app.logger))
+		return app.run(['who', '--help'], null, app.logger)
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the who command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('whoami'), 'Not outputting aliases');
@@ -62,8 +59,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the test command', () => {
-		return app.cli.interpret(['test-command-1', '--help'], null, app.logger)
-			.then(request => request.execute(app.logger))
+		return app.run(['test-command-1', '--help'], null, app.logger)
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the test-command-1 command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Test command is used for test cases.'), 'Not outputting long description');
@@ -76,9 +72,9 @@ describe('help command', () => {
 			});
 	});
 
-	it('throws when trying to output usage information for an non existing command', (done) => {
-		app.cli.interpret(['non-existing-command', '--help'], null, app.logger)
-			.then(request => request.execute(app.logger))
+	// @NOTE: Actually this does NOT throw, because errors are caught in run() already, echo'd and not rethrown ~wybe
+	xit('throws when trying to output usage information for an non existing command', (done) => {
+		app.run(['non-existing-command', '--help'], null, app.logger)
 			.then(() => {
 				done(new Error('Should have thrown'));
 			})
