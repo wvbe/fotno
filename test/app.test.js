@@ -13,7 +13,7 @@ const CONFIG_FILE_NAME = '.fotnotestrc';
 
 const cwd = path.resolve(__dirname, 'app');
 const testStdout = outputHelper.createTestStdout();
-const app = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test' });
+const app = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test', catchErrors: false });
 
 function cleanupDir (dir) {
 	return new Promise((response, reject) => fs.remove(dir, (err) => err ? reject(err) : response()));
@@ -36,27 +36,24 @@ describe('initial setup', () => {
 	});
 
 	it('is able to skip a malformed config file', () => {
-		assert.ok(new App([path.join(cwd, 'test-module-1')], 'index.js', { silent: true, appName: 'fotno-test' }));
+		assert.ok(new App([path.join(cwd, 'test-module-1')], 'index.js', { silent: true, appName: 'fotno-test', catchErrors: false  }));
 	});
 
 	it('throws an error when no config files are specified', () => {
 		assert.throws(() => {
-			new App([], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test' });
+			new App([], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false  });
 		});
 	});
 
 	it('throws when a loaded module is not an function', () => {
-		const appForInvalidModule = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test' });
+		const appForInvalidModule = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false });
 		assert.throws(() => {
 			appForInvalidModule.enableBuiltInModule(path.join(cwd, 'invalid-module-1'));
 		});
 	});
 
-	// @NOTE: Commented out because you're testing AskNicely behaviour here - I've added this test to the ask-nicely
-	//        lib instead. Also, fotno's App#run() does not throw because it handles errors by logging them, and does
-	//        not rethrow. ~wybe
-	xit('throws an error when a command does not exist', (done) => {
-		app.run(['non-existing-command'], undefined, true)
+	it('throws an error when a command does not exist', (done) => {
+		app.run(['non-existing-command'])
 			.then(() => {
 				done(new Error('Should have thrown'));
 			})
@@ -67,7 +64,8 @@ describe('initial setup', () => {
 
 	describe('is able to handle any thrown errors', () => {
 		it('is able to skip handling of throws errors', (done) => {
-			app.run(['non-existing-command', 'test param space'], undefined, true)
+			assert.strictEqual(app.catchErrors, false);
+			app.run(['non-existing-command', 'test param space'])
 				.then(() => {
 					done(new Error('Should have thrown'));
 				})
@@ -78,6 +76,8 @@ describe('initial setup', () => {
 
 		it('is able to handle any thrown errors', () => {
 			const exitEventListeners = process.listeners('exit');
+			app.catchErrors = true;
+			assert.strictEqual(app.catchErrors, true);
 			return app.run(['non-existing-command', 'test param space'])
 				.then(() => {
 					process.removeAllListeners('exit');
@@ -155,7 +155,7 @@ describe('initial setup', () => {
 		}));
 
 		it('together', () => {
-			const appForConfig = new App(levelDirs.slice(0, 2), CONFIG_FILE_NAME, { silent: true });
+			const appForConfig = new App(levelDirs.slice(0, 2), CONFIG_FILE_NAME, { silent: true, catchErrors: false  });
 
 			// Must not have read the top-most (unspecified) config file
 			assert.strictEqual(appForConfig.config['lvl-0'], undefined);
@@ -168,7 +168,7 @@ describe('initial setup', () => {
 		});
 
 		it('giving priority to earliest reads', () => {
-			const appForConfig = new App(levelDirs.slice(0, 3), CONFIG_FILE_NAME, { silent: true });
+			const appForConfig = new App(levelDirs.slice(0, 3), CONFIG_FILE_NAME, { silent: true, catchErrors: false  });
 
 			// Confirm 1 and 2 have not been overwritten by "three"
 			assert.strictEqual(appForConfig.config['lvl-1'], 'one');
@@ -180,7 +180,7 @@ describe('initial setup', () => {
 	});
 
 	describe('is able to install built-in modules', () => {
-		const appWithBuiltInModule = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test' });
+		const appWithBuiltInModule = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false  });
 
 		it('can enable built-in modules', () => {
 			appWithBuiltInModule.enableBuiltInModule(path.join(cwd, 'test-module-1'));

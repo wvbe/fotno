@@ -12,7 +12,7 @@ const CONFIG_FILE_NAME = '.fotnotestrc';
 
 const cwd = path.resolve(__dirname, 'app');
 const testStdout = outputHelper.createTestStdout();
-const app = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test' });
+const app = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test', catchErrors: false });
 
 function cleanupAppDir () {
 	return new Promise((response, reject) => fs.remove(path.join(cwd, CONFIG_FILE_NAME), (err) => err ? reject(err) : response()));
@@ -26,7 +26,7 @@ describe('help command', () => {
 	beforeEach(testStdout.resetOutput);
 
 	it('is able to output usage information', () => {
-		return app.run(['--help'], undefined, true)
+		return app.run(['--help'])
 			.then(() => {
 				assert.ok(testStdout.outputContains('fotno-test --help'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Child commands'), 'Not outputting child commands');
@@ -36,7 +36,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the module command', () => {
-		return app.run(['module', '--help'], undefined, true)
+		return app.run(['module', '--help'])
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the module command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Tool\'s module management'), 'Not outputting command description');
@@ -50,7 +50,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the who command', () => {
-		return app.run(['who', '--help'], undefined, true)
+		return app.run(['who', '--help'])
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the who command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('whoami'), 'Not outputting aliases');
@@ -59,7 +59,7 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for the test command', () => {
-		return app.run(['test-command-1', '--help'], undefined, true)
+		return app.run(['test-command-1', '--help'])
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the test-command-1 command'), 'Not outputting header');
 				assert.ok(testStdout.outputContains('Test command is used for test cases.'), 'Not outputting long description');
@@ -73,21 +73,21 @@ describe('help command', () => {
 	});
 
 	it('is able to output usage information for a setAsHelpCommand() command', () => {
-		return app.run(['test-command-2'], undefined, true)
+		return app.run(['test-command-2'])
 			.then(() => {
 				assert.ok(testStdout.outputContains('help for the test-command-2 command'), 'Not outputting header');
 			});
 	});
 
 	it('does not output usage information for a setAsHelpCommand(false) command', () => {
-		return app.run(['test-command-3'], undefined, true)
+		return app.run(['test-command-3'])
 			.then(() => {
 				assert.ok(!testStdout.outputContains('help for the test-command-3 command'), 'Outputting header');
 			});
 	});
 
 	it('throws when trying to output usage information for an non existing command', (done) => {
-		app.run(['non-existing-command', '--help'], undefined, true)
+		app.run(['non-existing-command', '--help'])
 			.then(() => {
 				done(new Error('Should have thrown'));
 			})

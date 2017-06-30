@@ -9,7 +9,7 @@ const App = require('../index');
 const CONFIG_FILE_NAME = '.fotnotestrc';
 
 const cwd = path.resolve(__dirname, 'app');
-const app = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test' });
+const app = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false });
 
 function cleanupAppDir () {
 	return new Promise((response, reject) => fs.remove(path.join(cwd, CONFIG_FILE_NAME), (err) => err ? reject(err) : response()));
@@ -18,9 +18,8 @@ function cleanupAppDir () {
 before(cleanupAppDir);
 
 describe('module command', () => {
-	// @NOTE: Doesn't look like anything is actually being tested here, missing asserts ~wybe
-	xit('does nothing if no add, remove, or list switches are specified', () => {
-		return app.run(['module'], undefined, true);
+	it('does nothing if no add, remove, or list switches are specified', () => {
+		return app.run(['module']);
 	});
 
 	describe('is able to install more modules', () => {
@@ -47,21 +46,21 @@ describe('module command', () => {
 		});
 
 		it('is able to be booted with modules', () => {
-			assert.strictEqual(new App([cwd], CONFIG_FILE_NAME, { silent: true }).modules.filter(m => m.getInfo().name === 'test-module-1').length, 1);
+			assert.strictEqual(new App([cwd], CONFIG_FILE_NAME, { silent: true, catchErrors: false }).modules.filter(m => m.getInfo().name === 'test-module-1').length, 1);
 		});
 
 		it('ignores non existing modules', () => {
-			return app.run(['module', '-a', 'non-existing-module'], undefined, true);
+			return app.run(['module', '-a', 'non-existing-module']);
 		});
 	});
 
 	describe('is able to list installed modules', () => {
 		it('is able to list installed modules', () => {
-			return app.run(['module', '-l'], undefined, true);
+			return app.run(['module', '-l']);
 		});
 
 		it('is able to verbose list installed modules', () => {
-			return app.run(['module', '-l', '-v'], undefined, true);
+			return app.run(['module', '-l', '-v']);
 		});
 	});
 
@@ -73,7 +72,7 @@ describe('module command', () => {
 		});
 
 		it('ignores non existing modules', () => {
-			return app.run(['module', '-r', 'non-existing-module'], undefined, true);
+			return app.run(['module', '-r', 'non-existing-module']);
 		});
 	});
 });

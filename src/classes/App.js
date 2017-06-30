@@ -24,6 +24,7 @@ class App {
 	 */
 	constructor (configLocations, configFileName, opts) {
 		this.name = opts && opts.appName ? opts.appName : path.basename(process.argv[1]);
+		this.catchErrors = !opts || typeof opts.catchErrors === 'undefined' ? true : !!opts.catchErrors;
 		this.config = new ConfigManager(configLocations, configFileName);
 		this.packageJson = require('../../package.json');
 		this.processPath = process.cwd();
@@ -147,13 +148,12 @@ class App {
 	/**
 	 * @param {Array<string>} args
 	 * @param {Object} request
-	 * @param {boolean} [skipErrorHandling]
 	 * @return {Promise.<TResult>}
 	 */
-	run (args, request, skipErrorHandling) {
+	run (args, request) {
 		const executedRequest = this.cli.execute(Object.assign([], args), request, this.logger);
 
-		if (skipErrorHandling) {
+		if (!this.catchErrors) {
 			return executedRequest;
 		}
 
