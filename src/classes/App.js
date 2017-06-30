@@ -151,8 +151,7 @@ class App {
 	 * @return {Promise.<TResult>}
 	 */
 	run (args, request, skipErrorHandling) {
-		const executedRequest = this.cli.interpret(Object.assign([], args), request, this.logger)
-			.then(request => request.execute(this.logger));
+		const executedRequest = this.cli.execute(Object.assign([], args), request, this.logger);
 
 		if (skipErrorHandling) {
 			return executedRequest;
