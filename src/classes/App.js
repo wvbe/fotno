@@ -101,12 +101,14 @@ class App {
 	 *
 	 * @param {string} modulePath The path to the module to enable.
 	 * @param {...*} [extra] Extra parameters which can be used by the module, only used for built-in modules.
-	 * @return {ModuleRegistrationApi}
+	 * @return {(ModuleRegistrationApi|null)}
 	 */
 	enableBuiltInModule (modulePath, ...extra) {
 		const mod = this.enableModule(modulePath, ...extra);
 
-		this.builtInModules.push(mod);
+		if (mod) {
+			this.builtInModules.push(mod);
+		}
 
 		return mod;
 	}
@@ -116,19 +118,49 @@ class App {
 	 *
 	 * @param {string} modulePath The path to the module to enable.
 	 * @param {...*} [extra] Extra parameters which can be used by the module, only used for built-in modules.
-	 * @return {ModuleRegistrationApi}
+	 * @return {(ModuleRegistrationApi|null)}
 	 */
-	enableModule (modulePath, ...extra) {
+	silentEnableModule (modulePath, ...extra) {
 		const mod = new ModuleRegistrationApi(this, modulePath);
 		const modInfo = mod.getInfo();
 
-		if (this.modules.some(mod => mod.getInfo().name === modInfo.name)) {
-			throw new Error(`A module with name "${modInfo.path}" was already added.`);
+		const modulesWithSameName = this.modules.filter(mod => mod.getInfo().name === modInfo.name);
+		if (modulesWithSameName.length) {
+			return null;
 		}
 
 		mod.load(...extra);
 
 		this.modules.push(mod);
+
+		return mod;
+	}
+
+	/**
+	 * Enable a module, which can be saved to the config file. Outputs notice when the module is a duplicate.
+	 *
+	 * @param {string} modulePath The path to the module to enable.
+	 * @param {...*} [extra] Extra parameters which can be used by the module, only used for built-in modules.
+	 * @return {(ModuleRegistrationApi|null)}
+	 */
+	enableModule (modulePath, ...extra) {
+		let mod = this.silentEnableModule(modulePath, ...extra);
+
+		if (!mod) {
+			mod = new ModuleRegistrationApi(this, modulePath);
+			const modInfo = mod.getInfo();
+			const moduleWithSameName = this.modules
+				.filter(mod => mod.getInfo().name === modInfo.name)
+				.map(mod => {
+					const info = mod.getInfo();
+					return info.path + (info.builtIn ? ' (built-in)' : '');
+				});
+			this.logger.break();
+			this.logger.notice(`Not loading module with name "${modInfo.path}", a module with the same name is already loaded.`);
+			this.logger.list(moduleWithSameName, '-');
+			this.logger.debug(`You can check your modules with \`${this.getInfo().name} module --list --verbose\` and remove the conflicting module(s) with \`${this.getInfo().name} module --remove <modulePath>\`.`);
+			return null;
+		}
 
 		return mod;
 	}

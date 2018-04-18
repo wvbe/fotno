@@ -36,12 +36,12 @@ describe('initial setup', () => {
 	});
 
 	it('is able to skip a malformed config file', () => {
-		assert.ok(new App([path.join(cwd, 'test-module-1')], 'index.js', { silent: true, appName: 'fotno-test', catchErrors: false  }));
+		assert.ok(new App([path.join(cwd, 'test-module-1')], 'index.js', { silent: true, appName: 'fotno-test', catchErrors: false }));
 	});
 
 	it('throws an error when no config files are specified', () => {
 		assert.throws(() => {
-			new App([], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false  });
+			new App([], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false });
 		});
 	});
 
@@ -155,7 +155,7 @@ describe('initial setup', () => {
 		}));
 
 		it('together', () => {
-			const appForConfig = new App(levelDirs.slice(0, 2), CONFIG_FILE_NAME, { silent: true, catchErrors: false  });
+			const appForConfig = new App(levelDirs.slice(0, 2), CONFIG_FILE_NAME, { silent: true, catchErrors: false });
 
 			// Must not have read the top-most (unspecified) config file
 			assert.strictEqual(appForConfig.config['lvl-0'], undefined);
@@ -168,7 +168,7 @@ describe('initial setup', () => {
 		});
 
 		it('giving priority to earliest reads', () => {
-			const appForConfig = new App(levelDirs.slice(0, 3), CONFIG_FILE_NAME, { silent: true, catchErrors: false  });
+			const appForConfig = new App(levelDirs.slice(0, 3), CONFIG_FILE_NAME, { silent: true, catchErrors: false });
 
 			// Confirm 1 and 2 have not been overwritten by "three"
 			assert.strictEqual(appForConfig.config['lvl-1'], 'one');
@@ -180,10 +180,11 @@ describe('initial setup', () => {
 	});
 
 	describe('is able to install built-in modules', () => {
-		const appWithBuiltInModule = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false  });
+		const appWithBuiltInModule = new App([cwd], CONFIG_FILE_NAME, { stdout: testStdout, appName: 'fotno-test', catchErrors: false });
+		const modulePath = path.join(cwd, 'test-module-1');
 
 		it('can enable built-in modules', () => {
-			appWithBuiltInModule.enableBuiltInModule(path.join(cwd, 'test-module-1'));
+			appWithBuiltInModule.enableBuiltInModule(modulePath);
 			assert.strictEqual(appWithBuiltInModule.modules.filter(m => m.getInfo().name === 'test-module-1').length, 1);
 		});
 
@@ -191,11 +192,12 @@ describe('initial setup', () => {
 			assert.ok(appWithBuiltInModule.cli.children.some(c => c.name === 'test-command-1'));
 		});
 
-		it('throws when trying to add the same module twice', () => {
-			assert.throws(() => {
-				appWithBuiltInModule.enableBuiltInModule(path.join(cwd, 'test-module-1'));
-				appWithBuiltInModule.enableBuiltInModule(path.join(cwd, 'test-module-1'));
-			});
+		it('does not load the same module twice and it outputs a notice about it', () => {
+			const module = appWithBuiltInModule.enableBuiltInModule(modulePath);
+			assert.strictEqual(module, null);
+			assert.ok(testStdout.outputContains(`Not loading module with name "${modulePath}", a module with the same name is already loaded.`), 'Outputting duplicate module notice');
+			assert.ok(testStdout.outputContains(`${modulePath} (built-in)`), 'Outputting loaded modules with the same name');
+			assert.ok(testStdout.outputContains(`You can check your modules with`), 'Outputting hint');
 		});
 	});
 });

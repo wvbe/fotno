@@ -67,6 +67,7 @@ class ModuleRegistrationApi {
 		return {
 			name: this[PACKAGEJSON].name,
 			version: this[PACKAGEJSON].version,
+			builtIn: this[APP].builtInModules.some(mod => mod === this),
 			description: this[PACKAGEJSON].description,
 			path: this[LOCATION]
 		};

@@ -8,15 +8,17 @@ module.exports = (fotno, app) => {
 
 		if (req.options.list) {
 			if (req.options.verbose) {
-				app.modules
-					.map(module => module.getInfo())
-					.forEach(info => {
-						res.caption(info.name);
-						delete info.name;
-						res.indent();
-						res.properties(info);
-						res.outdent();
-					});
+				app.modules.forEach(module => {
+					if (module.hideFromList) {
+						return;
+					}
+					const info = module.getInfo();
+					res.caption(info.name);
+					delete info.name;
+					res.indent();
+					res.properties(info);
+					res.outdent();
+				});
 			}
 			else {
 				res.list(app.modules.map(module => module.getInfo().name), '-');
@@ -56,11 +58,24 @@ module.exports = (fotno, app) => {
 		req.options.add.forEach(option => {
 			const modulePath = path.resolve(process.cwd(), option);
 
-			try {
-				const mod = app.enableModule(modulePath);
-				const modInfo = mod.getInfo();
+			const modIndex = app.modules.findIndex(mod => mod.getInfo().path === modulePath);
+			if (!modIndex === -1) {
+				res.notice('skipped', `A module with name "${modulePath}" was already added.`);
+				return;
+			}
 
-				res.property('enabled', `${modInfo.name} (${modInfo.version})`);
+			try {
+				const mod = app.silentEnableModule(modulePath);
+
+				if (!mod) {
+					res.property('skipping', `Could not add module with name "${modulePath}", might be a duplicate.`, null, 'notice');
+
+				}
+				else {
+					const modInfo = mod.getInfo();
+
+					res.property('enabled', `${modInfo.name} (${modInfo.version})`);
+				}
 			}
 			catch (e) {
 				res.property('skipped', e.stack, null, 'notice');
