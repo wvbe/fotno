@@ -19,8 +19,11 @@ class App {
 	 * @param {Array} configLocations
 	 * @param {string} configFileName
 	 * @param {Object} opts
-	 * @param {boolean} [opts.silent] - Excludes the use of opts.stdout
-	 * @param {WritableStream} [opts.stdout]
+	 * @param {string} [opts.appName] The name to use for the app
+	 * @param {string} [opts.appVersion] The current version of the app
+	 * @param {function(): FotnoCommand} [opts.commandClass] The Command class constructor to use for all commands, must inherit from fotno.FotnoCommand.
+	 * @param {boolean} [opts.silent] Excludes the use of opts.stdout
+	 * @param {WritableStream} [opts.stdout] Stream to use instead of stdout for output
 	 */
 	constructor (configLocations, configFileName, opts) {
 		this.name = opts && opts.appName ? opts.appName : path.basename(process.argv[1]);
@@ -57,9 +60,11 @@ class App {
 			stdout: stdout
 		});
 
-		this.cli = new ask.Command(this.name);
-		this.cli.setNewChildClass(FotnoCommand);
-		this.cli.getLongName = FotnoCommand.prototype.getLongName.bind(this.cli);
+		const CommandClass = opts && opts.commandClass ? opts.commandClass : FotnoCommand;
+		if (CommandClass !== FotnoCommand && !(CommandClass.prototype instanceof FotnoCommand)) {
+			throw new Error('Optional option commandClass does not inherit from FotnoCommand.');
+		}
+		this.cli = new CommandClass(this.name);
 		Object.assign(this.cli, ask);
 
 		this.modules = [];
@@ -96,7 +101,7 @@ class App {
 	}
 
 	/**
-	 * Built in modules are not saved to the config files. These modules can be added at runtime. This is usefull when
+	 * Built in modules are not saved to the config files. These modules can be added at runtime. This is useful when
 	 * creating a tools bundle powered by fotno.
 	 *
 	 * @param {string} modulePath The path to the module to enable.

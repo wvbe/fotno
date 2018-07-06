@@ -32,7 +32,7 @@ describe('motd command', () => {
 				assert.ok(outputHelper.stdoutContains('/:/_/:/  /  /:/__/ \\:\\__\\'), 'Not outputting logo');
 				assert.ok(!outputHelper.stdoutContains('v'), 'Should not output version');
 			})
-			.catch(outputHelper.catchStdout);
+			.catch(outputHelper.stdoutCatch);
 	});
 
 	it('is able to output the app name if no logos are set', () => {

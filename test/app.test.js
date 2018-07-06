@@ -35,6 +35,31 @@ describe('initial setup', () => {
 		assert.strictEqual(app.name, 'fotno-test');
 	});
 
+	it('can be configured with a custom Command class', () => {
+		class CustomCommandClass extends App.FotnoCommand {
+			constructor (name, controller) {
+				super(name, controller);
+
+				this.setNewChildClass(CustomCommandClass);
+			}
+		}
+
+		const appWithCustomCommandClass = new App([path.join(cwd, 'test-module-1')], 'index.js', {
+			silent: true,
+			appName: 'fotno-test',
+			catchErrors: false,
+			commandClass: CustomCommandClass
+		});
+
+		assert.ok(appWithCustomCommandClass.cli instanceof CustomCommandClass);
+
+		const testCommand = appWithCustomCommandClass.cli.addCommand('test');
+		assert.ok(testCommand instanceof CustomCommandClass);
+
+		const subCommand = testCommand.addCommand('sub-test');
+		assert.ok(subCommand instanceof CustomCommandClass);
+	});
+
 	it('is able to skip a malformed config file', () => {
 		assert.ok(new App([path.join(cwd, 'test-module-1')], 'index.js', { silent: true, appName: 'fotno-test', catchErrors: false }));
 	});
@@ -45,7 +70,7 @@ describe('initial setup', () => {
 		});
 	});
 
-	it('throws when a loaded module is not an function', () => {
+	it('throws when a loaded module is not a function', () => {
 		const appForInvalidModule = new App([cwd], CONFIG_FILE_NAME, { silent: true, appName: 'fotno-test', catchErrors: false });
 		assert.throws(() => {
 			appForInvalidModule.enableBuiltInModule(path.join(cwd, 'invalid-module-1'));
@@ -87,7 +112,7 @@ describe('initial setup', () => {
 					assert.ok(testStdout.outputContains('Could not find a match for input "non-existing-command"'), 'Not outputting error message');
 				})
 				.catch(error => {
-					// Cheanup if test fails
+					// Cleanup if test fails
 					process.removeAllListeners('exit');
 					exitEventListeners.forEach(exitEventListener => process.on('exit', exitEventListener));
 
