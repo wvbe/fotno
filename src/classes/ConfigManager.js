@@ -28,7 +28,7 @@ function readJsonOrReturnObject (jsonPath) {
 class ConfigManager {
 	/**
 	 * @constructor
-	 * @param {Array} possibleLocations  A list of pissible config file localtions, from high to low priority.
+	 * @param {Array} possibleLocations  A list of possible config file locations, from high to low priority.
 	 * @param {string} configFileName    The name of the config file.
 	 */
 	constructor (possibleLocations, configFileName) {
@@ -92,7 +92,7 @@ class ConfigManager {
 	 * Save a stringified version of the configuration object to a given location.
 	 *
 	 * @param {string} location - (preferably absolute) path to the dot-rc file, or its intended directory
-	 * @return {Promise} - Resolves to the succesful location
+	 * @return {Promise} - Resolves to the successful location
 	 */
 	save (location) {
 		if (!location) {
