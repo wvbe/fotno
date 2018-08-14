@@ -21,6 +21,8 @@ class App {
 	 * @param {Object} opts
 	 * @param {string} [opts.appName] The name to use for the app
 	 * @param {string} [opts.appVersion] The current version of the app
+	 * @param {boolean} [opts.catchErrors] When set to true, run errors are thrown instead of being pretty outputted.
+	 * @param {boolean} [opts.hideStacktraceOnErrors] When set to true, the stacktrace is not outputted when errors are outputted.
 	 * @param {function(): FotnoCommand} [opts.commandClass] The Command class constructor to use for all commands, must inherit from fotno.FotnoCommand.
 	 * @param {boolean} [opts.silent] Excludes the use of opts.stdout
 	 * @param {WritableStream} [opts.stdout] Stream to use instead of stdout for output
@@ -28,6 +30,7 @@ class App {
 	constructor (configLocations, configFileName, opts) {
 		this.name = opts && opts.appName ? opts.appName : path.basename(process.argv[1]);
 		this.catchErrors = !opts || typeof opts.catchErrors === 'undefined' ? true : !!opts.catchErrors;
+		this.hideStacktraceOnErrors = !opts || typeof opts.hideStacktraceOnErrors === 'undefined' ? false : !!opts.hideStacktraceOnErrors;
 		this.config = new ConfigManager(configLocations, configFileName);
 		this.packageJson = require('../../package.json');
 		this.processPath = process.cwd();
@@ -196,7 +199,7 @@ class App {
 
 		return executedRequest
 			.catch(error => {
-				this.error('failure', error, {
+				this.error(undefined, error, {
 					cwd: this.processPath,
 					args: [this.name].concat(args.map(arg => arg.indexOf(' ') >= 0 ? `"${arg}"` : arg)).join(' '),
 					mods: this.modules.map(mod => mod.getInfo().name + ` (${mod.getInfo().version})`).join(os.EOL)
@@ -223,25 +226,29 @@ class App {
 	error (caption, error, debugVariables) {
 		this.logger.destroyAllSpinners();
 
-		if (error.hasOwnProperty('solution')) {
+		if (error instanceof this.cli.InputError) {
 			this.logger.caption('Input error');
-		}
-		else if (caption) {
-			this.logger.caption(caption);
-		}
-
-		if (error) {
-			this.logger.error(error.message || error.stack || error);
-		}
-
-		if (error.hasOwnProperty('solution')) {
+			this.logger.error(error.message);
 			this.logger.break();
 			this.logger.notice('You might be able to fix this, use the "--help" flag for usage info.');
 			if (error.solution) {
 				this.logger.log(error.solution);
 			}
+			return;
 		}
-		else {
+
+		this.logger.caption(caption || 'Error');
+
+		if (error) {
+			this.logger.error(error.message || error.stack || error);
+		}
+
+		if (error.solution) {
+			this.logger.break();
+			this.logger.notice(error.solution);
+		}
+
+		if (!this.hideStacktraceOnErrors) {
 			if (error && error.stack) {
 				this.logger.indent();
 				this.logger.debug(error.stack);

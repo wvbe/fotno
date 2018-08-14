@@ -29,9 +29,9 @@
     "test": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha"
   },
   "dependencies": {
-    "ask-nicely": "^3.0.1",
+    "ask-nicely": "^3.0.2",
     "fs-extra": "^2.0.0",
-    "speak-softly": "^1.2.2"
+    "speak-softly": "^1.2.3"
   },
   "devDependencies": {
     "istanbul": "^0.4.5",
