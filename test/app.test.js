@@ -145,6 +145,19 @@ describe('initial setup', () => {
 			assert.ok(testStdout.outputContains('Test solution'), 'Not outputting solution');
 			assert.ok(testStdout.outputContains('You might be able to fix this, use the "--help" flag for usage info.'), 'Not outputting "run with --help flag" message');
 		});
+
+		it('is able to handle any Error with solution property', () => {
+			const errorWithSolution = new Error('Test error message');
+			errorWithSolution.solution = 'Test solution';
+			app.error('testfail', errorWithSolution);
+			assert.ok(testStdout.outputContains('Error'), 'Not outputting header');
+			assert.ok(testStdout.outputContains('Test error message'), 'Not outputting error message');
+			assert.ok(testStdout.outputContains('Test solution'), 'Not outputting solution');
+
+			// Check if we do not handle this as an InputError.
+			assert.ok(!testStdout.outputContains('Input error'), 'Not outputting header');
+			assert.ok(!testStdout.outputContains('You might be able to fix this, use the "--help" flag for usage info.'), 'Not outputting "run with --help flag" message');
+		});
 	});
 
 	describe('comes with core module installed', () => {
