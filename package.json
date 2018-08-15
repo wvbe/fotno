@@ -1,7 +1,7 @@
 {
   "name": "fotno",
-  "version": "4.1.7",
-  "description": "A toolkit for developing a swiss knife",
+  "version": "4.2.0",
+  "description": "Framework for a CLI toolkit with a focus on user friendliness and modularity",
   "repository": "wvbe/fotno",
   "author": {
     "name": "Wybe Minnebo",
