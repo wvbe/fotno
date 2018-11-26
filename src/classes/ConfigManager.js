@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs-extra');
+const fs = require('fs');
 const path = require('path');
 
 const CONFIG_FILE_NAME = Symbol('configuration file name');
@@ -16,12 +16,13 @@ function suffixPath (location, configFileName) {
 
 function readJsonOrReturnObject (jsonPath) {
 	try {
-		return fs.readJsonSync(jsonPath);
+		return JSON.parse(fs.readFileSync(jsonPath));
 	}
 	catch (_error) {
 		return {};
 	}
 }
+
 /**
  * Manages a unified configuration file for all modules that register their config.
  */
@@ -105,7 +106,7 @@ class ConfigManager {
 			location += suffix;
 		}
 
-		return new Promise((resolve, reject) => fs.outputFile(location, this.toString(), error => {
+		return new Promise((resolve, reject) => fs.writeFile(location, this.toString(), error => {
 			return error ?
 				reject(error) :
 				resolve(location);
