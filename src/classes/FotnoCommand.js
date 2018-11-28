@@ -1,6 +1,9 @@
 'use strict';
 
 const ask = require('ask-nicely');
+const path = require('path');
+
+const FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES = Symbol('FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES');
 
 /**
  * A fotno custom version of AskNicely#Command that has extra options for describing examples or a long description.
@@ -15,11 +18,63 @@ class FotnoCommand extends ask.Command {
 	constructor (name, controller) {
 		super(name, controller);
 
+		this.examples = [];
 		this.isHelpCommand = false;
 		this.longDescription = null;
-		this.examples = [];
+
+		this._moduleRegistration = null;
 
 		this.setNewChildClass(FotnoCommand);
+	}
+
+	static addFileNameToSkipForSetControllerCallsites (fileNameToSkip) {
+		FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES].push(fileNameToSkip);
+	}
+
+	getModuleRegistration () {
+		let command = this;
+		while (command) {
+			if (command._moduleRegistration) {
+				return command._moduleRegistration;
+			}
+			command = command.parent;
+		}
+		return null;
+	}
+
+	_getCallSites () {
+		const _prepareStackTrace = Error.prepareStackTrace;
+		Error.prepareStackTrace = (_, stack) => stack;
+		const stack = new Error().stack;
+		Error.prepareStackTrace = _prepareStackTrace;
+		return stack
+			.map(s => s.getFileName())
+			.filter(fileName => !FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES].some(fileNameToSkip => fileName && fileName.endsWith(fileNameToSkip)));
+	}
+
+	_createLazyLoadController (controllerSource) {
+		if (typeof controllerSource === 'string' && !path.isAbsolute(controllerSource)) {
+			const callsiteFilename = this._getCallSites()[0];
+			controllerSource = path.resolve(path.join(path.dirname(callsiteFilename), controllerSource));
+		}
+
+		return (...args) => {
+			return require(controllerSource)(...args);
+		};
+	}
+
+	/**
+	 * Set the main controller
+	 *
+	 * @param {string|function(AskNicelyRequest, SpeakSoftly)} [controller]
+	 * @return {Command} This command
+	 */
+	setController (controller) {
+		if (typeof controller === 'string') {
+			controller = this._createLazyLoadController(controller);
+		}
+
+		return super.setController(controller);
 	}
 
 	/**
@@ -69,5 +124,11 @@ class FotnoCommand extends ask.Command {
 			.join(' ');
 	}
 }
+
+FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES] = [
+	'/ask-nicely/dist/AskNicely.js',
+	'/fotno/src/classes/FotnoCommand.js',
+	'/fotno/src/classes/ModuleRegistrationApi.js'
+];
 
 module.exports = FotnoCommand;

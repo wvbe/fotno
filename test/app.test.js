@@ -166,6 +166,50 @@ describe('initial setup', () => {
 		});
 	});
 
+	describe('adds additional command logic', () => {
+		before(() => app.run(['module', '-a', path.join(cwd, 'test-module-1')]));
+
+		describe('.setController()', () => {
+			it('rewrites paths for lazy loaded root commands to the path of the module', () => {
+				return app.run(['test-command-4'])
+					.then(() => {
+						assert.ok(testStdout.outputContains('Test lazy load command: "test-command-4"'), 'Outputting command name');
+					});
+			});
+
+			it('rewrites paths for lazy loaded sub commands to the path of the module', () => {
+				return app.run(['test-command-4', 'test-command-4-sub-command-1'])
+					.then(() => {
+						assert.ok(testStdout.outputContains('Test lazy load command: "test-command-4-sub-command-1"'), 'Outputting command name');
+					});
+			});
+
+			it('does not rewrite absolute paths for lazy loaded sub commands to the path of the module', () => {
+				return app.run(['test-command-5'])
+					.then(() => {
+						assert.ok(testStdout.outputContains('Test lazy load command: "test-command-5"'), 'Outputting command name');
+					});
+			});
+
+			it('rewrites paths for lazy loaded sub commands to the path of the module when the root command has no controller', () => {
+				return app.run(['test-command-6', 'test-command-6-sub-command'])
+					.then(() => {
+						assert.ok(testStdout.outputContains('Test lazy load command: "test-command-6-sub-command"'), 'Outputting command name');
+					});
+			});
+		});
+
+		describe('.getModuleRegistration()', () => {
+			it('can return the module registration', () => {
+				return app.run(['test-command-4'])
+					.then(() => {
+						assert.ok(testStdout.outputContains('Test lazy load command: "test-command-4"'), 'Outputting command name');
+						assert.ok(testStdout.outputContains(/req\.command\.getModuleRegistration\(\)\.constructor\.name.+ModuleRegistrationApi/), 'Returns module registration');
+					});
+			});
+		});
+	});
+
 	describe('can read from multiple configuration files', () => {
 		const configurationLevelTestDirs = [
 				{ 'lvl-1': 'one' },

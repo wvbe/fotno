@@ -78,11 +78,13 @@ class ModuleRegistrationApi {
 	 *
 	 * @see FotnoCommand#addCommand
 	 * @param {string} name
-	 * @param {function(AskNicelyRequest, SpeakSoftly)} [controller]
+	 * @param {string|function(AskNicelyRequest, SpeakSoftly)} [controller]
 	 * @return {Command} The command object that was created
 	 */
 	registerCommand (name, controller) {
-		return this[APP].cli.addCommand(name, controller);
+		const command = this[APP].cli.addCommand(name, controller);
+		command._moduleRegistration = this;
+		return command;
 	}
 
 	/**
@@ -96,6 +98,16 @@ class ModuleRegistrationApi {
 	 */
 	registerConfiguration (name, defaultValue, serialize) {
 		return this[APP].config.registerConfig(name, defaultValue, serialize);
+	}
+
+	/**
+	 * Get the registered configuration.
+	 *
+	 * @param {string} name
+	 * @return {*} The configuration value
+	 */
+	getConfiguration (name) {
+		return this[APP].config[name];
 	}
 
 	/**

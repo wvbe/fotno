@@ -1,3 +1,7 @@
+'use strict';
+
+const path = require('path');
+
 module.exports = moduleRegistration => {
 	moduleRegistration.registerConfiguration('test-configuration', 'test');
 
@@ -17,7 +21,15 @@ module.exports = moduleRegistration => {
 		.setAsHelpCommand()
 		.setAsHelpCommand(false);
 
-	fotno.registerContextInformer((_request, response) => {
+	moduleRegistration.registerCommand('test-command-4', './src/testLazyLoadCommand.js')
+		.addCommand('test-command-4-sub-command-1', './src/testLazyLoadCommand.js');
+
+	moduleRegistration.registerCommand('test-command-5', path.resolve(path.join(__dirname, 'src/testLazyLoadCommand.js')));
+
+	moduleRegistration.registerCommand('test-command-6')
+		.addCommand('test-command-6-sub-command', './src/testLazyLoadCommand.js');
+
+
 	moduleRegistration.registerContextInformer((_request, response) => {
 		response.caption('Test');
 		response.debug('test context informer');
