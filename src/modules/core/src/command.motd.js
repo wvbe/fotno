@@ -11,8 +11,8 @@ function leftAlign (text, lineWidth) {
 	return text;
 }
 
-module.exports = (fotno, app, opts) => {
-	const logoConfig = fotno.registerConfiguration(
+module.exports = (moduleRegistration, app, opts) => {
+	const logoConfig = moduleRegistration.registerConfiguration(
 		'logo', {
 			logoIndex: 0
 		},
@@ -54,15 +54,15 @@ module.exports = (fotno, app, opts) => {
 				});
 		}
 		else {
-			res.caption(fotno.getAppInfo().name);
+			res.caption(moduleRegistration.getAppInfo().name);
 		}
 
-		if (fotno.getAppInfo().version) {
+		if (moduleRegistration.getAppInfo().version) {
 			res.break();
-			res.debug(leftAlign(`v${fotno.getAppInfo().version}`, maxLineLength));
+			res.debug(leftAlign(`v${moduleRegistration.getAppInfo().version}`, maxLineLength));
 		}
 
 		res.break();
-		res.notice(`Run "${fotno.getAppInfo().name} --help" to show usage information.`);
+		res.notice(`Run "${moduleRegistration.getAppInfo().name} --help" to show usage information.`);
 	});
 };

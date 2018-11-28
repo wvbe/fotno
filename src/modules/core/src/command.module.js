@@ -2,7 +2,7 @@
 
 const path = require('path');
 
-module.exports = (fotno, app) => {
+module.exports = (moduleRegistration, app) => {
 	function moduleController (req, res) {
 		res.caption(req.command.getLongName());
 
@@ -87,19 +87,19 @@ module.exports = (fotno, app) => {
 		return !req.options.dry ?
 			app.config.save().then((location) => {
 				res.success(`Saved ${path.basename(location)}`);
-				res.debug(`Type "${fotno.getAppInfo().name} who" to find your current running configuration.`);
+				res.debug(`Type "${moduleRegistration.getAppInfo().name} who" to find your current running configuration.`);
 			}) :
 			res.notice('Not saving configuration file');
 	}
 
-	fotno.registerCommand('module', moduleController)
+	moduleRegistration.registerCommand('module', moduleController)
 		.setDescription('Tool\'s module management.')
 
-		.addOption(new fotno.MultiOption('add')
+		.addOption(new moduleRegistration.MultiOption('add')
 			.setDescription('Add a module.')
 			.setDefault([], true)
 			.setShort('a'))
-		.addOption(new fotno.MultiOption('remove')
+		.addOption(new moduleRegistration.MultiOption('remove')
 			.setDescription('Remove a module.')
 			.setDefault([], true)
 			.setShort('r'))
@@ -108,7 +108,7 @@ module.exports = (fotno, app) => {
 		.addOption('list', 'l', 'List all enabled modules.')
 		.addOption('verbose', 'v', 'Use verbose output when listing modules.')
 
-		.addExample(`${fotno.getAppInfo().name} module --add ./anywhere/my-fotno-module`, 'Add a module to the tool and store it in the configuration file.')
-		.addExample(`${fotno.getAppInfo().name} module --remove ./anywhere/my-fotno-module`, 'Remove a module from the tool and store it in the configuration file.')
-		.addExample(`${fotno.getAppInfo().name} module --list --verbose`, 'Remove a module from the tool and store it in the configuration file.');
+		.addExample(`${moduleRegistration.getAppInfo().name} module --add ./anywhere/my-fotno-module`, 'Add a module to the tool and store it in the configuration file.')
+		.addExample(`${moduleRegistration.getAppInfo().name} module --remove ./anywhere/my-fotno-module`, 'Remove a module from the tool and store it in the configuration file.')
+		.addExample(`${moduleRegistration.getAppInfo().name} module --list --verbose`, 'Remove a module from the tool and store it in the configuration file.');
 };

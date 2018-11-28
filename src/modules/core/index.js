@@ -1,5 +1,5 @@
-module.exports = (fotno, app, opts) => {
-	fotno.registerContextInformer((_request, response) => {
+module.exports = (moduleRegistration, app, opts) => {
+	moduleRegistration.registerContextInformer((_request, response) => {
 		response.caption('Modules');
 
 		const visibleModules = app.modules.filter(module => !module.hideFromList);
@@ -25,5 +25,5 @@ module.exports = (fotno, app, opts) => {
 		require('./src/command.module.js'),
 		require('./src/command.help.js'),
 		require('./src/command.who.js')
-	].forEach(mod => mod(fotno, app, opts));
+	].forEach(mod => mod(moduleRegistration, app, opts));
 };

@@ -3,7 +3,7 @@
 const os = require('os');
 const path = require('path');
 
-module.exports = (fotno, app) => {
+module.exports = (moduleRegistration, app) => {
 	function whoController (req, res) {
 		res.caption(req.command.getLongName());
 
@@ -19,7 +19,7 @@ module.exports = (fotno, app) => {
 		});
 	}
 
-	fotno.registerCommand('who', whoController)
+	moduleRegistration.registerCommand('who', whoController)
 		.addAlias('whoami')
 		.setDescription('Tells you what you are, and what you\'re doing here.');
 };

@@ -21,12 +21,12 @@ function toOptionRow (option) {
 	];
 }
 
-module.exports = (fotno, app) => {
+module.exports = (moduleRegistration, app) => {
 	function helpController (req, res) {
 		const command = req.command;
 		const isRoot = !command.parent;
 
-		res.caption((isRoot ? `${fotno.getAppInfo().name} --help` : 'help for the ' + command.name + ' command'));
+		res.caption((isRoot ? `${moduleRegistration.getAppInfo().name} --help` : 'help for the ' + command.name + ' command'));
 
 		const props = [];
 		props.push(['Command', command.getLongName()]);
@@ -72,7 +72,7 @@ module.exports = (fotno, app) => {
 	}
 
 	app.cli.setDescription(app.packageJson.description);
-	app.cli.addOption(new fotno.IsolatedOption('help')
+	app.cli.addOption(new moduleRegistration.IsolatedOption('help')
 		.setShort('h')
 		.setDescription('Show usage information, works for any command.'))
 		.addPreController((req, res) => {
