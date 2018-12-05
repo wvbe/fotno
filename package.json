@@ -1,6 +1,6 @@
 {
   "name": "fotno",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Framework for a CLI toolkit with a focus on user friendliness and modularity",
   "repository": "wvbe/fotno",
   "author": {
