@@ -28,7 +28,7 @@ class FotnoCommand extends ask.Command {
 	}
 
 	static addFileNameToSkipForSetControllerCallsites (fileNameToSkip) {
-		FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES].push(fileNameToSkip);
+		FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES].push(path.join(fileNameToSkip));
 	}
 
 	getModuleRegistration () {
@@ -125,10 +125,9 @@ class FotnoCommand extends ask.Command {
 	}
 }
 
-FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES] = [
-	'/ask-nicely/dist/AskNicely.js',
-	'/fotno/src/classes/FotnoCommand.js',
-	'/fotno/src/classes/ModuleRegistrationApi.js'
-];
+FotnoCommand[FILENAMES_TO_SKIP_FOR_SET_CONTROLLER_CALLSITES] = [];
+FotnoCommand.addFileNameToSkipForSetControllerCallsites('/ask-nicely/dist/AskNicely.js');
+FotnoCommand.addFileNameToSkipForSetControllerCallsites('/fotno/src/classes/FotnoCommand.js');
+FotnoCommand.addFileNameToSkipForSetControllerCallsites('/fotno/src/classes/ModuleRegistrationApi.js');
 
 module.exports = FotnoCommand;
